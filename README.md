@@ -1,4 +1,4 @@
-# AHA 1.3 — Automatic Head Anonymization
+# AHA 1.5 — Automatic Head Anonymization
 
 > Ένα βίντεο μπαίνει, ένα δεύτερο βγαίνει με τα κεφάλια των ανθρώπων κρυμμένα.
 > Το πρωτότυπο δεν αγγίζεται ποτέ. Τρέχει 100% τοπικά.
@@ -18,7 +18,7 @@
 ## Περιεχόμενα
 
 1. [Τι κάνει το πρόγραμμα](#1-τι-κάνει-το-πρόγραμμα)
-2. [Τι χρειάζεται για να τρέξει](#2-τι-χρειάζεται-για-να-τρέξει)
+2. [Εγκατάσταση](#2-εγκατάσταση)
 3. [Η διαδικασία, βήμα βήμα](#3-η-διαδικασία-βήμα-βήμα)
 4. [Τα πέντε εφέ](#4-τα-πέντε-εφέ)
 5. [Κάθε χειριστήριο](#5-κάθε-χειριστήριο)
@@ -32,12 +32,21 @@
 
 Το AHA είναι εργαλείο γραφείου, όχι υπηρεσία. Τρέχει εξ ολοκλήρου στον υπολογιστή σου:
 κανένα καρέ δεν φεύγει από τη μηχανή, δεν υπάρχει τηλεμετρία και δεν κρατιέται κανένα
-αρχείο καταγραφής με προσωπικά δεδομένα. Η μόνη φορά που αγγίζει το δίκτυο είναι την
-πρώτη εκτέλεση, αν λείπει το αρχείο του μοντέλου ανίχνευσης — το κατεβάζει από το
-GitHub και δεν στέλνει τίποτα.
+αρχείο καταγραφής με προσωπικά δεδομένα. Αν το εγκατέστησες από το Setup δεν αγγίζει
+καθόλου το δίκτυο: το μοντέλο ανίχνευσης έρχεται μαζί του. Από τον κώδικα, η μόνη
+δικτυακή κίνηση είναι η λήψη του μοντέλου την πρώτη φορά — από το GitHub, χωρίς να
+στέλνει τίποτα.
 
 Το πρωτότυπο μένει ανέπαφο: γράφεται πάντα **νέο** αρχείο, με το όνομα του πρωτοτύπου
 και το εφέ στο τέλος (`TestFile_BlackBars.mp4`).
+
+### Πώς βρίσκει το κεφάλι: δύο επίπεδα
+
+Πρώτα ο **άνθρωπος**, μετά το **κεφάλι μέσα του**. Τα ράφια και οι πάγκοι κόβουν τον
+καθένα σε κομμάτια — κεφάλι πάνω από ένα ράφι, κορμός πίσω του, πόδια από κάτω — οπότε
+το πρόγραμμα ενώνει πρώτα τα κομμάτια σε ολόκληρο σώμα και μόνο μετά βγάζει το κεφάλι
+από την κορυφή του. Το μέγεθος του κεφαλιού προσαρμόζεται στην απόσταση, και όταν
+φαίνεται πρόσωπο, αυτό ορίζει πού ακριβώς είναι το κεφάλι.
 
 Κάνει **ανίχνευση** προσώπου, όχι **αναγνώριση**. Δεν φτιάχνεται και δεν αποθηκεύεται
 κανένα βιομετρικό αποτύπωμα· βρίσκει πού υπάρχει κεφάλι και το σβήνει.
@@ -58,24 +67,59 @@ GitHub και δεν στέλνει τίποτα.
 
 ---
 
-## 2. Τι χρειάζεται για να τρέξει
+## 2. Εγκατάσταση
 
-| Τι | Λεπτομέρεια | Αν λείπει |
-|---|---|---|
-| Python | `3.9+` | Το πρόγραμμα δεν ανοίγει. |
-| OpenCV | `pip install opencv-python` | Δοκιμασμένο σε 5.0.0. |
-| NumPy | `pip install numpy` | Έρχεται μαζί με το OpenCV. |
-| Μοντέλο | `face_detection_yunet_2023mar.onnx` | Κατεβαίνει μόνο του δίπλα στο script. |
-| ffmpeg | στο `PATH` | Προαιρετικό. Χωρίς αυτό δεν κρατιέται ήχος και δεν αφαιρούνται μεταδεδομένα. |
+Δύο δρόμοι.
 
-Οι ρυθμίσεις γράφονται στο `aha_settings.json`, δίπλα στο `AHA_1.3.py`. Σβήσε το αρχείο
-για να ξαναρχίσεις από τις προεπιλογές.
+### Α. Το πρόγραμμα εγκατάστασης — `AHA_1.5_Setup.exe`
+
+Διπλό κλικ και τέλος. Δεν χρειάζεται Python, δεν χρειάζεται OpenCV, **δεν χρειάζεται
+ούτε internet** — το μοντέλο ανίχνευσης έρχεται μέσα στο πακέτο. Δεν ζητάει δικαιώματα
+διαχειριστή.
+
+> ⚠️ **Την πρώτη φορά τα Windows θα γκρινιάξουν.** Το Setup δεν έχει ψηφιακή υπογραφή,
+> οπότε το SmartScreen δείχνει «Τα Windows προστάτευσαν τον υπολογιστή σας». Πάτα
+> **Περισσότερες πληροφορίες → Εκτέλεση οπωσδήποτε**. Μια υπογραφή κοστίζει και
+> ανανεώνεται κάθε χρόνο.
+
+### Β. Από τον κώδικα — `AHA_1.5.py`
+
+| Τι | Λεπτομέρεια |
+|---|---|
+| Python | `3.9+` |
+| OpenCV | `pip install opencv-python` (δοκιμασμένο σε 5.0.0) |
+| NumPy | έρχεται μαζί με το OpenCV |
+| Μοντέλο | `face_detection_yunet_2023mar.onnx` — κατεβαίνει μόνο του την πρώτη φορά |
 
 ```
-python AHA_1.3.py
+python AHA_1.5.py
 ```
 
 Το παράθυρο ανοίγει μεγιστοποιημένο.
+
+### Πού πηγαίνει τι
+
+| Τι | Πού |
+|---|---|
+| Το πρόγραμμα | `%LOCALAPPDATA%\Programs\AHA` |
+| Ρυθμίσεις | `%APPDATA%\AHA\aha_settings.json` |
+| Μοντέλο ανίχνευσης | `%LOCALAPPDATA%\Programs\AHA` |
+| Εγχειρίδια | `…\AHA\Manual\AHA_Manual_GR.pdf` |
+
+Οι ρυθμίσεις είναι σκόπιμα **έξω** από τον φάκελο του προγράμματος: εκεί θα χάνονταν σε
+κάθε αναβάθμιση, και σε φάκελο συστήματος δεν θα μπορούσαν καν να γραφτούν. Σβήσε τον
+φάκελο `%APPDATA%\AHA` για να ξαναρχίσεις από τις προεπιλογές.
+
+Τα παράθυρα επιλογής αρχείου ανοίγουν στον φάκελο **Βίντεο** σου.
+
+### Αναβάθμιση και απεγκατάσταση
+
+- **Αναβάθμιση:** τρέξε το νέο Setup. Βρίσκει μόνο του την παλιά έκδοση, σου λέει ποια
+  βρήκε και τη σβήνει πριν βάλει τη νέα. Οι ρυθμίσεις σου επιβιώνουν.
+- **Απεγκατάσταση:** Ρυθμίσεις → Εφαρμογές → AHA, ή από τη συντόμευση στο μενού Έναρξη.
+  Ρωτάει αν θες να σβηστούν και οι ρυθμίσεις — η προεπιλογή είναι όχι.
+- **ffmpeg:** προαιρετικό, δεν εγκαθίσταται. Χωρίς αυτό δεν κρατιέται ήχος και δεν
+  αφαιρούνται μεταδεδομένα. Το πρόγραμμα σε προειδοποιεί όταν λείπει.
 
 ---
 
@@ -168,7 +212,7 @@ python AHA_1.3.py
 | **ΚΑΤΩΦΛΙ ΣΚΗΝΗΣ** | `30` · 20–90 | Πόσο πρέπει να διαφέρει ένα εικονοστοιχείο από την άδεια σκηνή για να μετρήσει ως άνθρωπος. **Χαμηλότερο πιάνει περισσότερους** — και περισσότερες σκιές. |
 | **ΕΛΑΧΙΣΤΟ ΜΕΓΕΘΟΣ ΑΝΘΡΩΠΟΥ** | `250` · 80–3000 | Εξαρτάται από την κάμερα: αλλού ο άνθρωπος είναι ~100×300 px και αλλού ~25×70. Πολύ ψηλά, οι μακρινοί πετιούνται ως θόρυβος. |
 | **Μόνο κεφάλι** | `on` | Καλύπτει μόνο το κεφάλι. Ξετσέκαρέ το για ολόκληρο τον άνθρωπο. |
-| **ΥΨΟΣ ΚΕΦΑΛΙΟΥ** | `22%` · 8–60 | Το κεφάλι ως ποσοστό του σώματος. Εμφανίζεται όταν το «Μόνο κεφάλι» είναι τσεκαρισμένο. |
+| **ΥΨΟΣ ΚΕΦΑΛΙΟΥ** | `22%` · 8–60 | Το ποσοστό υπολογίζεται από την απόσταση: ο κοντινός παίρνει ~18% του ύψους του, ο μακρινός ~28%. Η μπάρα το ανεβοκατεβάζει συνολικά — 22% = «όπως υπολογίστηκε», 30% = «κατά ένα τρίτο μεγαλύτερο». |
 | **ΚΑΛΥΨΗ ΚΕΦΑΛΙΟΥ** | `55%` · 0–120 | Επεκτείνει κάθε άνθρωπο προς τα πάνω, γιατί σκούρα ρούχα σε σκούρο ράφι συχνά κόβουν το σχήμα στη μέση. Εμφανίζεται όταν το «Μόνο κεφάλι» είναι ξετσεκαρισμένο. |
 
 > **Γιατί κατώφλι 30 και όχι 50;** Σε μέτρηση **1117 καρέ** πραγματικής κάμερας
@@ -197,12 +241,12 @@ python AHA_1.3.py
 το μοντέλο. Σβήσε το και ξανάνοιξε το πρόγραμμα.
 
 **Αιτία Β — ελληνικά στη διαδρομή.** Το OpenCV ανοίγει το αρχείο με κωδικοποίηση των
-Windows και δεν βλέπει ελληνικούς χαρακτήρες. Το AHA 1.3 το παρακάμπτει διαβάζοντας το
+Windows και δεν βλέπει ελληνικούς χαρακτήρες. Το AHA 1.5 το παρακάμπτει διαβάζοντας το
 μοντέλο σε μνήμη· αν επιμείνει, βάλε το script σε διαδρομή με λατινικούς χαρακτήρες.
 
 ### `HOGDescriptor.detectMultiScale() got an unexpected keyword argument 'finalThreshold'`
 
-Δεν προέρχεται από το AHA 1.3 — **το AHA δεν χρησιμοποιεί HOG**. Τρέχεις άλλη έκδοση.
+Δεν προέρχεται από το AHA 1.5 — **το AHA δεν χρησιμοποιεί HOG**. Τρέχεις άλλη έκδοση.
 Το OpenCV 5 κατάργησε αυτή την παράμετρο.
 
 ### Χάνονται άνθρωποι στη λειτουργία CCTV
@@ -215,6 +259,12 @@ Windows και δεν βλέπει ελληνικούς χαρακτήρες. Τ
 
 Ανέβασε το **ΕΛΑΧΙΣΤΟ ΜΕΓΕΘΟΣ ΑΝΘΡΩΠΟΥ**. Αν το σημάδι είναι πάντα στο ίδιο σημείο —
 σφραγίδα ημερομηνίας, οθόνη, αυτόματη πόρτα — βάλε εκεί περιοχή **Εξαίρεση**.
+
+### Οι ρυθμίσεις δεν θυμούνται / το μοντέλο ξανακατεβαίνει
+
+Έκδοση 1.4 ή παλιότερη σε μορφή `.exe`. Εκείνες έγραφαν δίπλα στο εκτελέσιμο, δηλαδή σε
+προσωρινό φάκελο που σβήνεται στο κλείσιμο. Το 1.5 γράφει στο `%APPDATA%\AHA` και φέρνει
+το μοντέλο μαζί του.
 
 ### Ο ήχος δεν κρατήθηκε / τα μεταδεδομένα έμειναν
 
@@ -239,6 +289,9 @@ Windows και δεν βλέπει ελληνικούς χαρακτήρες. Τ
 
 Δύο ακόμη όρια, μικρότερα αλλά πραγματικά:
 
+- Άνθρωπος του οποίου το κεφάλι έχει ακριβώς το χρώμα του φόντου πίσω του (σκούρα
+  μαλλιά σε σκούρο ράφι) μπορεί να μείνει έξω από το σώμα του — τότε το σημάδι πέφτει
+  χαμηλότερα. Τα «Πλαίσια ανίχνευσης» στην προεπισκόπηση το δείχνουν αμέσως.
 - Η λειτουργία CCTV θέλει **πραγματικά** ακίνητη κάμερα. Κάμερα που ταλαντεύεται στον
   αέρα ή κάνει pan κάνει ολόκληρο το κάδρο «κίνηση».
 - **Το πρόσωπο δεν είναι το μόνο αναγνωριστικό.** Καρτελάκια ονόματος, πινακίδες
@@ -281,7 +334,7 @@ Windows και δεν βλέπει ελληνικούς χαρακτήρες. Τ
 ## Contents
 
 1. [What the program does](#1-what-the-program-does)
-2. [What it needs to run](#2-what-it-needs-to-run)
+2. [Installing it](#2-installing-it)
 3. [The procedure, step by step](#3-the-procedure-step-by-step)
 4. [The five effects](#4-the-five-effects)
 5. [Every control](#5-every-control)
@@ -294,12 +347,20 @@ Windows και δεν βλέπει ελληνικούς χαρακτήρες. Τ
 ## 1. What the program does
 
 AHA is a desktop tool, not a service. It runs entirely on your own machine: no frame
-leaves the computer, there is no telemetry, and no log with personal data is kept. The
-only time it touches the network is on the very first run, if the detection model file is
-missing — it downloads it from GitHub and sends nothing.
+leaves the computer, there is no telemetry, and no log with personal data is kept. Installed from Setup it never
+touches the network at all: the detection model ships with it. Run from source, the only
+network traffic is fetching that model once — from GitHub, sending nothing.
 
 The original is left untouched: AHA always writes a **new** file, named after the original
 with the effect appended (`TestFile_BlackBars.mp4`).
+
+### How it finds the head: two levels
+
+First the **person**, then the **head inside them**. Shelves and counters cut each
+shopper into pieces — head above a shelf, torso behind it, legs below — so the program
+assembles the pieces into a whole body first and only then takes the head from its top.
+Head size adapts to distance, and where a face is visible it is the face that fixes
+where the head is.
 
 It performs face **detection**, not face **recognition**. No biometric template is ever
 built or stored; it finds where a head is and erases it.
@@ -319,24 +380,57 @@ built or stored; it finds where a head is and erases it.
 
 ---
 
-## 2. What it needs to run
+## 2. Installing it
 
-| What | Detail | If missing |
-|---|---|---|
-| Python | `3.9+` | The program will not open. |
-| OpenCV | `pip install opencv-python` | Tested on 5.0.0. |
-| NumPy | `pip install numpy` | Comes along with OpenCV. |
-| Model | `face_detection_yunet_2023mar.onnx` | Downloads itself next to the script. |
-| ffmpeg | on `PATH` | Optional. Without it audio cannot be kept and metadata is not stripped. |
+Two ways.
 
-Settings are written to `aha_settings.json`, next to `AHA_1.3.py`. Delete that file to
-start again from the defaults.
+### A. The installer — `AHA_1.5_Setup.exe`
+
+Double-click and you are done. No Python, no OpenCV, **no internet either** — the
+detection model comes inside the package. It never asks for administrator rights.
+
+> ⚠️ **The first time, Windows will complain.** Setup is not digitally signed, so
+> SmartScreen shows "Windows protected your PC". Click **More info → Run anyway**. A
+> signature costs money and has to be renewed every year.
+
+### B. From source — `AHA_1.5.py`
+
+| What | Detail |
+|---|---|
+| Python | `3.9+` |
+| OpenCV | `pip install opencv-python` (tested on 5.0.0) |
+| NumPy | comes with OpenCV |
+| Model | `face_detection_yunet_2023mar.onnx` — downloads itself on the first run |
 
 ```
-python AHA_1.3.py
+python AHA_1.5.py
 ```
 
 The window opens maximized.
+
+### Where everything goes
+
+| What | Where |
+|---|---|
+| The program | `%LOCALAPPDATA%\Programs\AHA` |
+| Settings | `%APPDATA%\AHA\aha_settings.json` |
+| Detection model | `%LOCALAPPDATA%\Programs\AHA` |
+| Manuals | `…\AHA\Manual\AHA_Manual_EN.pdf` |
+
+The settings live **outside** the program folder on purpose: there they would be wiped by
+every upgrade, and in a system folder they could not be written at all. Delete the
+`%APPDATA%\AHA` folder to start again from the defaults.
+
+File dialogs open in your **Videos** folder.
+
+### Upgrading and uninstalling
+
+- **Upgrading:** run the new Setup. It finds the old version by itself, tells you which
+  one it found, and removes it before putting the new one in. Your settings survive.
+- **Uninstalling:** Settings › Apps › AHA, or the shortcut in the Start menu. It asks
+  whether to delete your settings too — the default is no.
+- **ffmpeg:** optional, not installed. Without it audio cannot be kept and metadata is
+  not stripped. The program warns you when it is missing.
 
 ---
 
@@ -431,7 +525,7 @@ published de-blurring techniques can recover a recognisable face.
 | **SCENE THRESHOLD** | `30` · 20–90 | How far a pixel must differ from the empty scene to count as a person. **Lower catches more people** — and more shadows. |
 | **MINIMUM PERSON SIZE** | `250` · 80–3000 | Camera dependent: a person is ~100×300 px in one view and ~25×70 in another. Too high and distant people are dropped as noise. |
 | **Head only** | `on` | Covers just the head. Uncheck to cover the whole person. |
-| **HEAD HEIGHT** | `22%` · 8–60 | The head as a share of the body. Shown when "Head only" is ticked. |
+| **HEAD HEIGHT** | `22%` · 8–60 | The share is worked out from distance: someone close gets ~18% of their height, someone far ~28%. The slider scales that as a whole — 22% = "as calculated", 30% = "a third larger". |
 | **HEAD COVERAGE** | `55%` · 0–120 | Extends each person upward, because dark clothing on dark shelving often cuts the shape at the waist. Shown when "Head only" is unticked. |
 
 > **Why threshold 30 and not 50?** Measured over **1117 frames** of a real shop camera: at
@@ -459,12 +553,12 @@ published de-blurring techniques can recover a recognisable face.
 Delete it and reopen the program.
 
 **Cause B — Greek characters in the path.** OpenCV opens the file through the Windows
-codepage and cannot see them. AHA 1.3 works around this by loading the model into memory;
+codepage and cannot see them. AHA 1.5 works around this by loading the model into memory;
 if it still fails, put the script in a path with Latin characters only.
 
 ### `HOGDescriptor.detectMultiScale() got an unexpected keyword argument 'finalThreshold'`
 
-This does not come from AHA 1.3 — **AHA does not use HOG**. You are running a different
+This does not come from AHA 1.5 — **AHA does not use HOG**. You are running a different
 build. OpenCV 5 removed that parameter.
 
 ### People are missed in CCTV mode
@@ -477,6 +571,12 @@ is the one that matters.
 
 Raise **MINIMUM PERSON SIZE**. If the mark is always in the same place — a timestamp, a
 monitor, an automatic door — put an **Exclude** area over it.
+
+### Settings are forgotten / the model downloads again
+
+Version 1.4 or older as an `.exe`. Those wrote next to the executable — a temporary
+folder that is deleted on exit. 1.5 writes to `%APPDATA%\AHA` and carries the model with
+it.
 
 ### Audio was not kept / metadata survived
 
@@ -501,6 +601,9 @@ monitor, an automatic door — put an **Exclude** area over it.
 
 Two further limits, smaller but real:
 
+- Someone whose head is exactly the colour of what is behind it (dark hair against dark
+  shelving) can fall outside their own body box — the mark then sits lower. Ticking
+  "Detection boxes" in the preview shows this at once.
 - CCTV mode needs a **genuinely** motionless camera. One that sways in the air, or pans,
   makes the whole frame read as motion.
 - **A face is not the only identifier.** Name badges, vehicle plates, uniforms, tattoos,
@@ -536,4 +639,4 @@ points that are commonly misread:
 
 ---
 
-<sub>AHA 1.3 · Automatic Head Anonymization · ™ 2026 · © Copyright by Petros Andrianos</sub>
+<sub>AHA 1.5 · Automatic Head Anonymization · ™ 2026 · © Copyright by Petros Andrianos</sub>
